@@ -1,0 +1,37 @@
+# This is split from the main build to run nightly and to file issues for any broken links found. Avoid
+# running this on PRs as it has write access to the repository, and we shouldn't file issues based on
+# problems found in PRs.
+
+name: Nightly Link Checker
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # required for peter-evans/create-issue-from-file
+    steps:
+      - name: Set up Java 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Build with Maven
+        run: mvn -e --batch-mode --no-transfer-progress verify -Pgrunt
+      - uses: actions/checkout@v4
+      - name: Check links in generated site
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: false
+      - name: Create Issue From File
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Link Checker Report
+          content-filepath: ./lychee/out.md
+          labels: report, automated issue
