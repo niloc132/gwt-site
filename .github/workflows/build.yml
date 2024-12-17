@@ -21,6 +21,10 @@ jobs:
       - name: Check links in generated site
         id: lychee
         uses: lycheeverse/lychee-action@v2
+        with:
+          fail: true
+          failIfEmpty: true
+          args: --base 'target/generated-site/' --no-progress './target/generated-site/**/*.html'
       - name: Upload artifact for testing/deployment
         uses: actions/upload-artifact@v3
         with:
