@@ -24,7 +24,11 @@ jobs:
         with:
           fail: true
           failIfEmpty: true
-          args: --base 'target/generated-site/' --no-progress './target/generated-site/**/*.html'
+          args: |
+                --no-progress
+                --offline
+                --exclude './target/generated-site/javadoc'
+                './target/generated-site/**/*.html'
       - name: Upload artifact for testing/deployment
         uses: actions/upload-artifact@v3
         with:
