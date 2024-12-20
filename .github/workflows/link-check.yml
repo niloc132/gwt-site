@@ -33,9 +33,9 @@ jobs:
             --exclude './target/generated-site/javadoc'
             './target/generated-site/**/*.html'
       - name: Create Issue From File
-        if: steps.lychee.outputs.exit_code != 0
+        if: failure() && steps.lychee.outputs.exit_code != 0
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: Link Checker Report
           content-filepath: ./lychee/out.md
-          labels: report, automated issue
+          labels: broken link
